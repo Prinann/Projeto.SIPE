@@ -23,34 +23,6 @@ O S.I.P.E. é um sistema web desenvolvido em Django para auxiliar na gestão e a
 
 ---
 
-## Estrutura do Projeto
-
-SIPE/
-├── manage.py
-├── sipe_project/
-│ ├── settings.py
-│ └── urls.py
-├── procuracoes/
-│ ├── migrations/
-│ ├── templates/procuracoes/
-│ │ ├── home.html
-│ │ ├── cadastrar_procuracao.html
-│ │ ├── editar_procuracao.html
-│ │ └── excluir_procuracao.html
-│ ├── forms.py
-│ ├── models.py
-│ ├── urls.py
-│ └── views.py
-├── templates/
-│ └── base.html
-└── static/js/
-└── main.js
-
-yaml
-Copiar código
-
----
-
 ## Funcionalidades
 
 - Dashboard com estatísticas de procurações (Total, Vencidas, Próximos 30 dias, Ativas)
