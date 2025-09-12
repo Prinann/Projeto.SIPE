@@ -46,7 +46,6 @@ cd SIPE
 Crie um ambiente virtual e ative-o:
 
 bash
-Copiar código
 python -m venv venv
 # Windows
 venv\Scripts\activate
@@ -55,27 +54,22 @@ source venv/bin/activate
 Instale as dependências:
 
 bash
-Copiar código
 pip install -r requirements.txt
 Execute as migrações:
 
 bash
-Copiar código
 python manage.py migrate
 Crie um superusuário (opcional):
 
 bash
-Copiar código
 python manage.py createsuperuser
 Execute o servidor de desenvolvimento:
 
 bash
-Copiar código
 python manage.py runserver
 Acesse o sistema no navegador:
 
 cpp
-Copiar código
 http://127.0.0.1:8000/
 Próximos Passos
 Implementar alertas automáticos de vencimento por e-mail
