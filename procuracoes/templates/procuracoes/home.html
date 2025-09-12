@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos customizados para um visual mais elegante */
+    :root {
+        --primary-color: #003366; /* Azul Marinho Profundo */
+        --accent-color: #C0C0C0;  /* Prata/Cinza Claro */
+        --font-family-sans: 'Roboto', sans-serif;
+        --font-family-serif: 'Merriweather', serif;
+    }
+    body {
+        font-family: var(--font-family-sans);
+        color: #333;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-family-sans);
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+    .alert {
+        border-radius: .5rem;
+        border: 1px solid transparent;
+    }
+    .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+    .alert-warning { background-color: #fff3cd; border-color: #ffeeba; color: #856404; }
+    .alert-success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+
+    .card {
+        border: 1px solid #e0e0e0;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .card.bg-danger { background-color: #dc3545 !important; }
+    .card.bg-warning { background-color: #ffc107 !important; }
+    .card.bg-success { background-color: #28a745 !important; }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        border-radius: 0.5rem;
+    }
+    .btn-primary:hover {
+        background-color: #002244;
+        border-color: #002244;
+    }
+    .btn-outline-primary, .btn-outline-danger {
+        border-radius: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .table-responsive {
+        border: 1px solid #e9ecef;
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+    .table {
+        margin-bottom: 0;
+    }
+    .table thead th {
+        background-color: #f8f9fa;
+        color: var(--primary-color);
+        font-weight: bold;
+        border-bottom: 2px solid var(--primary-color);
+    }
+    .table tbody tr:last-child {
+        border-bottom: none;
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #fdfdfe;
+    }
+    .badge {
+        font-weight: 600;
+        padding: .4em .8em;
+        border-radius: 1rem;
+    }
+</style>
+
+<section id="dashboard" class="mb-5" aria-labelledby="dashboard-title">
+    <h1 id="dashboard-title" class="h5 mb-4">
+        <i class="fas fa-chart-line text-primary me-2"></i>Visão Geral do Escritório
+    </h1>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        <div class="col">
+            <div class="card text-center py-4 px-3">
+                <i class="fas fa-file-alt fa-2x mb-2 text-primary"></i>
+                <div class="text-muted small">Total de Procurações</div>
+                <strong class="h3 mb-0 mt-1">{{ total_procuracoes }}</strong>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-center py-4 px-3">
+                <i class="fas fa-exclamation-triangle fa-2x mb-2 text-danger"></i>
+                <div class="text-muted small">Vencidas</div>
+                <strong><a href="#procuracoes" class="text-danger h3 mb-0 mt-1" onclick="filtrarPorStatus('Expirada')">{{ vencidas|length }}</a></strong>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-center py-4 px-3">
+                <i class="fas fa-clock fa-2x mb-2 text-warning"></i>
+                <div class="text-muted small">Próximos 30 Dias</div>
+                <strong><a href="#procuracoes" class="h3 mb-0 mt-1 text-warning" onclick="filtrarPorStatus('Vence em breve')">{{ vencem_em_30_dias|length }}</a></strong>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-center py-4 px-3">
+                <i class="fas fa-check-circle fa-2x mb-2 text-success"></i>
+                <div class="text-muted small">Ativas</div>
+                <strong><a href="#procuracoes" class="h3 mb-0 mt-1 text-success" onclick="filtrarPorStatus('Ativa')">{{ ativas|length }}</a></strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="procuracoes" aria-labelledby="procuracoes-title">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h6 mb-0"><i class="fas fa-list me-2 text-primary"></i>Lista de Procurações</h2>
+        <a href="{% url 'cadastrar_procuracao' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus-circle me-1"></i>Cadastrar Nova
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-8">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Pesquisar por número, outorgante ou outorgado..." onkeyup="filtrarProcuracoes()">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select id="filtroStatus" class="form-select form-select-sm" onchange="filtrarProcuracoes()">
+                <option value="">Todos os Status</option>
+                <option value="Ativa">Ativa</option>
+                <option value="Vence em breve">Vence em breve</option>
+                <option value="Expirada">Expirada</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle" id="procuracoesTable">
+            <thead>
+                <tr>
+                    <th scope="col">Número</th>
+                    <th scope="col">Outorgante</th>
+                    <th scope="col">Outorgado</th>
+                    <th scope="col">Emissão</th>
+                    <th scope="col">Vencimento</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Prioridade</th>
+                    <th scope="col" class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in procuracoes %}
+                <tr>
+                    <td>{{ p.numero }}</td>
+                    <td>{{ p.outorgante }}</td>
+                    <td>{{ p.outorgado }}</td>
+                    <td>{{ p.data_emissao|date:"d/m/Y" }}</td>
+                    <td>{{ p.data_vencimento|date:"d/m/Y" }}</td>
+                    <td>{{ p.status }}</td>
+                    <td>
+                        {% if p.prioridade == 'Baixa' %}
+                            <span class="badge bg-success">Baixa</span>
+                        {% elif p.prioridade == 'Média' %}
+                            <span class="badge bg-warning text-dark">Média</span>
+                        {% else %}
+                            <span class="badge bg-danger">Alta</span>
+                        {% endif %}
+                    </td>
+                    <td class="d-flex gap-2 justify-content-end">
+                        <a href="{% url 'editar_procuracao' p.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'excluir_procuracao' p.pk %}" class="btn btn-sm btn-outline-danger" title="Excluir">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center py-4">Nenhuma procuração cadastrada.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+    function filtrarPorStatus(status) {
+        document.getElementById('filtroStatus').value = status;
+        filtrarProcuracoes();
+    }
+
+    function filtrarProcuracoes() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const status = document.getElementById('filtroStatus').value;
+        const rows = document.querySelectorAll('#procuracoesTable tbody tr');
+
+        rows.forEach(row => {
+            if (row.cells.length < 8) {
+                row.style.display = '';
+                return;
+            }
+            const numero = row.cells[0].textContent.toLowerCase();
+            const outorgante = row.cells[1].textContent.toLowerCase();
+            const outorgado = row.cells[2].textContent.toLowerCase();
+            const rowStatus = row.cells[5].textContent;
+
+            const matchSearch = numero.includes(search) || outorgante.includes(search) || outorgado.includes(search);
+            const matchStatus = !status || rowStatus === status;
+            
+            row.style.display = (matchSearch && matchStatus) ? '' : 'none';
+        });
+    }
+</script>
+{% endblock %}
