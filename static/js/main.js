@@ -1,50 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Busca
     const searchInput = document.getElementById('searchInput');
-    const cards = document.querySelectorAll('#procuracoesList .card');
+    const filtroStatus = document.getElementById('filtroStatus');
+    const rows = document.querySelectorAll('#procuracoesTable tbody tr');
 
-    searchInput.addEventListener('input', () => {
+    // Função para filtrar linhas da tabela
+    function filtrarProcuracoes() {
         const query = searchInput.value.toLowerCase();
+        const statusSelecionado = filtroStatus.value;
 
-        cards.forEach(card => {
-            const outorgante = card.querySelector('.card-title').innerText.toLowerCase();
-            const outorgado = card.querySelector('.card-text').innerText.toLowerCase();
-
-            if (outorgante.includes(query) || outorgado.includes(query)) {
-                card.closest('.col-lg-4').style.display = 'block';
-            } else {
-                card.closest('.col-lg-4').style.display = 'none';
+        rows.forEach(row => {
+            if (row.cells.length < 8) {
+                row.style.display = '';
+                return;
             }
+
+            const numero = row.cells[0].textContent.toLowerCase();
+            const outorgante = row.cells[1].textContent.toLowerCase();
+            const outorgado = row.cells[2].textContent.toLowerCase();
+            const statusRow = row.cells[5].textContent;
+
+            const matchSearch = numero.includes(query) || outorgante.includes(query) || outorgado.includes(query);
+            const matchStatus = !statusSelecionado || statusRow === statusSelecionado;
+
+            row.style.display = (matchSearch && matchStatus) ? '' : 'none';
         });
-    });
-
-    // Filtro por status
-    window.filtrarProcuracoes = () => {
-        const statusSelecionado = document.getElementById('filtroStatus').value;
-
-        cards.forEach(card => {
-            const statusCard = card.dataset.status;
-
-            if (!statusSelecionado || statusCard === statusSelecionado) {
-                card.closest('.col-lg-4').style.display = 'block';
-            } else {
-                card.closest('.col-lg-4').style.display = 'none';
-            }
-        });
-    };
-
-    // Scroll topo
-    const btnTopo = document.getElementById("btn-topo");
-    window.onscroll = function() {
-        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-            btnTopo.style.display = "block";
-        } else {
-            btnTopo.style.display = "none";
-        }
     }
 
-    window.topFunction = () => {
-        document.body.scrollTop = 0; // Safari
-        document.documentElement.scrollTop = 0; // Chrome, Firefox, IE e Opera
+    // Eventos de input e select
+    searchInput.addEventListener('input', filtrarProcuracoes);
+    filtroStatus.addEventListener('change', filtrarProcuracoes);
+
+    // Função para filtrar pelo clique em cards do dashboard
+    window.filtrarPorStatus = (status) => {
+        filtroStatus.value = status;
+        filtrarProcuracoes();
+    };
+
+    // Scroll topo (se existir botão)
+    const btnTopo = document.getElementById("btn-topo");
+    if (btnTopo) {
+        window.onscroll = () => {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btnTopo.style.display = "block";
+            } else {
+                btnTopo.style.display = "none";
+            }
+        };
+
+        window.topFunction = () => {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        };
     }
 });
