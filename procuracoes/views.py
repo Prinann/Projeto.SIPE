@@ -7,19 +7,49 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+
+# ------------------------------
+# View para login como visitante
+# ------------------------------
+def login_como_visitante(request):
+    # Usuário visitante com login e senha padrão
+    username = 'visitante'
+    senha = 'visitante123'  # senha padrão
+
+    # Tenta buscar o usuário, cria se não existir
+    visitante, criado = User.objects.get_or_create(username=username)
+    if criado:
+        visitante.set_password(senha)
+        visitante.save()
+
+    # Faz login automático
+    login(request, visitante)
+
+    # Redireciona para o painel principal
+    return redirect('home')
+
+# ------------------------------
+# Views originais
+# ------------------------------
 
 @login_required
 def home(request):
     hoje = timezone.localdate()
-    # Pega todas as procurações do usuário
-    procuracoes = list(Procuracao.objects.filter(usuario=request.user).order_by('data_vencimento'))
 
-    # Inicializa as listas para a contagem no dashboard
+    # Se for visitante, pega todas as procurações do sistema (visualização)
+    if request.user.username == 'visitante':
+        procuracoes = list(Procuracao.objects.all().order_by('data_vencimento'))
+    else:
+        procuracoes = list(Procuracao.objects.filter(usuario=request.user).order_by('data_vencimento'))
+
+    # Inicializa listas para contagem no dashboard
     vencidas_list = []
     vencem_em_30_dias_list = []
     ativas_list = []
     
-    # Itera sobre as procurações para definir status, prioridade e preencher as listas
+    # Itera sobre as procurações para definir status e prioridade
     for proc in procuracoes:
         if proc.data_vencimento < hoje:
             proc.status = 'Expirada'
@@ -44,6 +74,10 @@ def home(request):
 
 @login_required
 def cadastrar_procuracao(request):
+    # Bloqueia acesso do visitante à criação
+    if request.user.username == 'visitante':
+        return redirect('home')
+
     if request.method == 'POST':
         form = ProcuracaoForm(request.POST)
         if form.is_valid():
@@ -57,6 +91,9 @@ def cadastrar_procuracao(request):
 
 @login_required
 def editar_procuracao(request, pk):
+    if request.user.username == 'visitante':
+        return redirect('home')  # Bloqueia visitante
+
     procuracao = get_object_or_404(Procuracao, pk=pk, usuario=request.user)
     if request.method == 'POST':
         form = ProcuracaoForm(request.POST, instance=procuracao)
@@ -69,6 +106,9 @@ def editar_procuracao(request, pk):
 
 @login_required
 def excluir_procuracao(request, pk):
+    if request.user.username == 'visitante':
+        return redirect('home')  # Bloqueia visitante
+
     procuracao = get_object_or_404(Procuracao, pk=pk, usuario=request.user)
     if request.method == 'POST':
         procuracao.delete()
@@ -77,8 +117,12 @@ def excluir_procuracao(request, pk):
 
 @login_required
 def api_buscar_procuracoes(request):
+    if request.user.username == 'visitante':
+        procuracoes = Procuracao.objects.all()
+    else:
+        procuracoes = Procuracao.objects.filter(usuario=request.user)
+
     query = request.GET.get('q', '')
-    procuracoes = Procuracao.objects.filter(usuario=request.user)
     if query:
         procuracoes = procuracoes.filter(
             Q(outorgante__icontains=query) | Q(outorgado__icontains=query) | Q(numero__icontains=query)

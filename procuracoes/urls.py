@@ -7,4 +7,7 @@ urlpatterns = [
     path('procuracao/editar/<int:pk>/', views.editar_procuracao, name='editar_procuracao'),
     path('procuracao/excluir/<int:pk>/', views.excluir_procuracao, name='excluir_procuracao'),
     path('api/buscar/', views.api_buscar_procuracoes, name='api_buscar_procuracoes'),
+
+    # Rota para login como visitante
+    path('login/visitante/', views.login_como_visitante, name='login_como_visitante'),
 ]
