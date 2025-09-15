@@ -69,10 +69,10 @@ WSGI_APPLICATION = 'sipe_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sipe',          # Nome do banco MySQL
-        'USER': 'root',          # Usuário MySQL
-        'PASSWORD': 'jmu36jxk',
-        'HOST': 'localhost',     
+        'NAME': 'Renannnns1$default',                   # nome do banco
+        'USER': 'Renannnns1',                            # usuário PA
+        'PASSWORD': 'sua_senha_aqui',                   # senha que você definiu
+        'HOST': 'Renannnns1.mysql.pythonanywhere-services.com',  # host PA
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"

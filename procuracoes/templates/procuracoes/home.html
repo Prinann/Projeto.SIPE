@@ -5,54 +5,50 @@
 
 {% block content %}
 <style>
-    /* Estilos customizados para um visual mais elegante */
     :root {
-        --primary-color: #003366; /* Azul Marinho Profundo */
-        --accent-color: #C0C0C0;  /* Prata/Cinza Claro */
+        --primary-color: #003366;
+        --accent-color: #C0C0C0;
         --font-family-sans: 'Roboto', sans-serif;
-        --font-family-serif: 'Merriweather', serif;
     }
+
     body {
         font-family: var(--font-family-sans);
         color: #333;
     }
+
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-family-sans);
         font-weight: 500;
         color: var(--primary-color);
     }
+
     .alert {
         border-radius: .5rem;
-        border: 1px solid transparent;
     }
-    .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
-    .alert-warning { background-color: #fff3cd; border-color: #ffeeba; color: #856404; }
-    .alert-success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
 
     .card {
         border: 1px solid #e0e0e0;
         border-radius: 0.75rem;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .card.bg-danger { background-color: #dc3545 !important; }
-    .card.bg-warning { background-color: #ffc107 !important; }
-    .card.bg-success { background-color: #28a745 !important; }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,.1);
+    }
 
     .btn-primary {
         background-color: var(--primary-color);
         border-color: var(--primary-color);
         border-radius: 0.5rem;
     }
+
     .btn-primary:hover {
         background-color: #002244;
         border-color: #002244;
     }
+
     .btn-outline-primary, .btn-outline-danger {
         border-radius: 0.5rem;
     }
@@ -61,31 +57,55 @@
         border-radius: 0.5rem;
         padding: 0.5rem 1rem;
     }
-    
+
     .table-responsive {
         border: 1px solid #e9ecef;
         border-radius: 0.75rem;
-        overflow: hidden;
+        overflow-x: auto; /* Scroll horizontal em telas pequenas */
     }
+
     .table {
         margin-bottom: 0;
+        min-width: 900px; /* largura mínima para caber todas as colunas */
     }
+
     .table thead th {
         background-color: #f8f9fa;
         color: var(--primary-color);
         font-weight: bold;
         border-bottom: 2px solid var(--primary-color);
+        white-space: nowrap; /* evita quebra do título */
     }
-    .table tbody tr:last-child {
-        border-bottom: none;
-    }
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #fdfdfe;
-    }
+
     .badge {
         font-weight: 600;
         padding: .4em .8em;
         border-radius: 1rem;
+    }
+
+    @media (max-width: 767.98px) {
+        body { font-size: 0.95rem; }
+
+        .d-flex.justify-content-between.align-items-center.mb-3 {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+        .d-flex.justify-content-between.align-items-center.mb-3 a {
+            margin-top: 0.5rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        .row.g-3.mb-4 .col-md-8,
+        .row.g-3.mb-4 .col-md-4 {
+            margin-bottom: .5rem;
+        }
+
+        #procuracoesTable tbody td.d-flex {
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
     }
 </style>
 
