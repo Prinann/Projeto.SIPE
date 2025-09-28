@@ -10,7 +10,7 @@ O S.I.P.E. é um sistema web desenvolvido em Django para auxiliar na gestão e a
 **Backend:**
 - Python 3.x
 - Django
-- SQLite3 (para desenvolvimento)
+- MySQL
 
 **Frontend:**
 - HTML5, CSS3, JavaScript
